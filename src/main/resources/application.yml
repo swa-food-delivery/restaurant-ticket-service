@@ -1,0 +1,46 @@
+server:
+  port: 8184
+spring:
+  datasource:
+    initialization-mode: always
+    schema: classpath:/schema.sql
+    url: jdbc:postgresql://${TICKETS_DB_HOST:localhost}:${TICKETS_DB_PORT:54324}/postgres
+    username: "admin"
+    password: "admin"
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        ddl-auto: none
+  application:
+    name: restaurant-tickets-service
+
+eureka:
+  instance:
+    hostname: ${TICKETS_HOST:localhost}
+    instance-id: ${vcap.application.instance_id:${spring.application.name}:${spring.application.instance_id:${server.port}}}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8182/eureka/}
+  healthcheck:
+    enabled: true
+
+management:
+  endpoint:
+    shutdown:
+      enabled: true
+    heapdump:
+      enabled: true
+    logfile:
+      enabled: true
+    info:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: @project.version@
+
+logging:
+  level:
+    root: debug

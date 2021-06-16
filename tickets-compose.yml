@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  tickets-db:
+    image: postgres:latest
+    container_name: tickets-db
+    ports:
+      - 8284:8080
+      - 54324:5432
+    volumes:
+      - "tickets-db:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+volumes:
+  tickets-db:

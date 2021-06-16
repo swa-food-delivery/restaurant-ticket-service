@@ -1,0 +1,165 @@
+openapi: 3.0.0
+info:
+  title: Restaurant tickets microservice
+  description: Microservice for manging order on restaurant side
+  version: 1.0.0
+servers:
+  - url: 'https'
+
+paths:
+  /tickets/{restaurantId}:
+    parameters:
+      - $ref: '#/components/parameters/RestaurantIdPathParameter'
+
+    post:
+      summary: Notifies restaurant staff about new order
+      operationId: createTicket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketBaseDTO'
+
+      responses:
+        201:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketDTO'
+    get:
+      summary: Get all active tickets
+      operationId: getTickets
+      parameters:
+        - $ref: '#/components/parameters/TicketStatusQueryParameter'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TicketDTO'
+        404:
+          $ref: '#/components/responses/NotFound'
+
+  /tickets/status/{ticketId}:
+    put:
+      summary: Update ticket status
+      operationId: updateTicketStatus
+      parameters:
+        - $ref: '#/components/parameters/TicketIdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusDTO'
+
+      responses:
+        200:
+          $ref: '#/components/responses/OK'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+
+
+components:
+  parameters:
+    RestaurantIdPathParameter:
+      description: id of a restaurant
+      name: restaurantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    TicketIdPathParameter:
+      description: id of a ticket
+      name: ticketId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    TicketStatusQueryParameter:
+      description: Status of a ticket. Optional parameter, if it's not specified all tickets are returned
+      name: ticketStatus
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/TicketStatusEnum'
+
+  schemas:
+    TicketStatusEnum:
+      type: string
+      enum:
+        - PENDING
+        - ACCEPTED
+        - DECLINED
+        - PREPARED
+    StatusDTO:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/TicketStatusEnum'
+    TicketBaseDTO:
+      type: object
+      properties:
+        ticketId:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+    TicketDTO:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/TicketBaseDTO'
+        - type: object
+          properties:
+            restaurantId:
+              type: string
+              format: uuid
+            status:
+              $ref: '#/components/schemas/TicketStatusEnum'
+    BadRequestExceptionDTO:
+      title: Bad request Exception
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    NotFoundExceptionDTO:
+      title: Resurce not found
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+  responses:
+    OK:
+      description: OK
+    NotFound:
+      description: Specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundExceptionDTO'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestExceptionDTO'
+
+
+
+
+
