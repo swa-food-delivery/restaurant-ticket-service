@@ -41,6 +41,10 @@ info:
     name: ${spring.application.name}
     version: @project.version@
 
+feign:
+  circuitbreaker:
+    enabled: true
+
 logging:
   level:
     root: debug

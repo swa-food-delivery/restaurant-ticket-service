@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import microfood.tickets.dtos.TicketBaseDTO;
 import microfood.tickets.dtos.TicketDTO;
 
-@FeignClient(name = "restaurant-tickets-service")
+@FeignClient(name = "restaurant-tickets-service", fallback = TicketsFallbacks.class)
 public interface RestaurantTicketsClient {
     @RequestMapping(method = RequestMethod.POST, value = "/tickets/{restaurantId}", consumes = "application/json")
     TicketDTO createTicket(@PathVariable UUID restaurantId, TicketBaseDTO ticketBaseDTO);
+
 }
